@@ -1,0 +1,68 @@
+---
+title: "R2-Analysis-Plotting"
+output: html_document
+---
+
+## Setup 
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+## Read in data
+
+```{r}
+raw <- read_csv("data-raw/babynames_2000_2024_NICAR26.csv")
+```
+
+## Cleaning
+
+```{r}
+babynames <- raw |> clean_names()
+```
+
+```{r}
+babynames |> head(10)
+```
+
+```{r}
+babynames |> tail(7)
+```
+
+
+## Analysis 
+
+### Group By and Summarize
+
+```{r}
+babynames |> group_by(yr) 
+```
+
+Count
+
+```{r}
+babynames |> group_by(yr) |> summarize(total_names = n())
+```
+
+```{r}
+babynames |> group_by(yr, sex) |> summarize(total_names = n())
+```
+
+```{r}
+babynames |> group_by(yr, sex) |> summarize(total_names = n()) |> pivot_wider(names_from = sex, values_from = total_names)
+```
+
+
+```{r}
+babynames |> tabyl(yr, sex)
+```
+
+Sum
+
+```{r}
+babynames |> group_by(yr) |> summarize(total_babies = sum(name_count))
+```
+
+
+
