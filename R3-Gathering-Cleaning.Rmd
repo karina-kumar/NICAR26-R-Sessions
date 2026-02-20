@@ -1,5 +1,52 @@
 ---
 title: "R3-Gathering-Cleaning"
+author: "Katherine Oung"
+date: "3/2026"
 output: html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro
+
+Learn how to import a wide variety of files in R including spreadsheets, files on the web and HTML tables, and transform the results into usable data. This session will also focus on how to clean and structure the data you've gathered in preparation for analysis using tidyverse packages.
+
+This session is good for: People who have some experience using R and the Tidyverse.
+
+## Setup
+
+### Loading dackages
+
+### Ways to load data
+
+#### Loading data from a local flat (csv) file
+
+#### Loading data from a flat file on the Internet
+
+#### Loading data from an Excel file
+
+#### Loading data from an HTML table
+
+#### Loading data from google sheets
+
+#### Combining text files
+
+#### Your Turn
+
+## Data Cleaning
+
+### Identifying issues
+
+### Remove empty rows and columns
+
+### Remove duplicates
+
+### Cleaning up names columns
+
+### Standardizing
+
+
+
 
