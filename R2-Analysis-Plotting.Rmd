@@ -3,6 +3,8 @@ title: "R2-Analysis-Plotting"
 output: html_document
 ---
 
+Description: We'll be learning how to clean, sort, filter, group, summarize
+
 ## Setup 
 
 ```{r}
@@ -16,6 +18,17 @@ library(janitor)
 raw <- read_csv("data-raw/babynames_2000_2024_NICAR26.csv")
 ```
 
+```{r}
+view(raw)
+
+# What are some things we immediately notice about this dataset?
+```
+
+
+```{r}
+raw # No clicking around!
+```
+
 ## Cleaning
 
 ```{r}
@@ -23,17 +36,21 @@ babynames <- raw |> clean_names()
 ```
 
 ```{r}
+# Now, let's preview the data again
+
 babynames |> head(10)
 ```
 
 ```{r}
+# How about the bottom? 
 babynames |> tail(7)
 ```
-
 
 ## Analysis 
 
 ### Group By and Summarize
+
+What are some questions we can ask of this dataset? 
 
 ```{r}
 babynames |> group_by(yr) 
@@ -42,27 +59,78 @@ babynames |> group_by(yr)
 Count
 
 ```{r}
-babynames |> group_by(yr) |> summarize(total_names = n())
+babynames |> group_by(yr) |> summarize(total_names = n()) # Name your new column
 ```
+
+What if we want to add another variable for a more complex ask?
 
 ```{r}
 babynames |> group_by(yr, sex) |> summarize(total_names = n())
+
+# How would you structure this table so that you could more easily see total number of names for F and M by year? 
 ```
 
 ```{r}
-babynames |> group_by(yr, sex) |> summarize(total_names = n()) |> pivot_wider(names_from = sex, values_from = total_names)
+babynames |> group_by(yr, sex) |> 
+  summarize(total_names = n()) |> 
+  pivot_wider(names_from = sex, values_from = total_names)
 ```
 
+Is there an easier way to do this? Yep!
 
 ```{r}
 babynames |> tabyl(yr, sex)
 ```
 
-Sum
+What about total babies?
 
 ```{r}
 babynames |> group_by(yr) |> summarize(total_babies = sum(name_count))
 ```
+
+What year had the most babies? 
+
+```{r}
+babynames |> group_by(yr) |> summarize(total_babies = sum(name_count)) |>
+  arrange(yr) # desc
+```
+
+You try: 
+
+What was the most popular name in 2024?
+
+```{r}
+babynames |> 
+  filter(yr == 2024) |> 
+  group_by(yr, name) |> 
+  summarize(total_babies = sum(name_count)) |> 
+  arrange(desc(total_babies))
+```
+
+How has the name Liam grown in popularity year over year, since 2000?
+
+```{r}
+babynames |> 
+  filter(name == "Liam") |> 
+  group_by(yr) |> 
+  summarize(total_liams = sum(name_count))
+```
+
+How would you visualize this? 
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+babynames |> 
+  filter(name == "Liam") |> 
+  group_by(yr) |> 
+  summarize(total_liams = sum(name_count)) |> 
+  ggplot(aes(x = yr, y = total_liams)) +
+  geom_line()
+```
+
 
 
 
