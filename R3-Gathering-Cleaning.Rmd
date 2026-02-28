@@ -17,19 +17,88 @@ This session is good for: People who have some experience using R and the Tidyve
 
 ## Setup
 
-### Loading dackages
+These packages should be installed on your machine already, but for reference, you can one-time install packages in your console using install.packages('packagename').
 
-### Ways to load data
+### Loading packages
+
+```{r}
+library(tidyverse)
+library(rvest)
+library(janitor)
+library(readxl)
+library(googlesheets4)
+library(lubridate)
+```
+
+## Ways to load data
+
+If you've taken earlier classes in this sequence, you'll have loaded Social Security Administration data on names of babies born from 2000-2024.
+
+Loading data from a flat file -- like a csv -- stored on your local machine is a very common data loading task.  For that, we'll use the `read_csv()` function that's part of the `readr` package that loads with the `tidyverse`. 
+
+You can load data from an absolute or relative (recommended) path on your computer.
 
 #### Loading data from a local flat (csv) file
+```{r}
+baby_names_flat <- read_csv("data-raw/R3_babynames_2000_2024_NICAR26.csv")
+
+# Show first 10 records
+baby_names_flat %>%
+  head(10)
+```
 
 #### Loading data from a flat file on the Internet
 
+We can load that same csv from the internet, instead of doing it locally.  We just need to change the information inside of the `read_csv()` function to pass a URL, instead of a location on our computer. 
+
+The CSV is up on Github.com, here: https://github.com/karina-kumar/NICAR26-R-Sessions/blob/798ed76f38a0481b8256694fc33bacfbc2bdfd58/data-raw/babynames_2000_2024_NICAR26.csv
+
+Warning: this may not work if the wifi is buggy!
+
+```{r}
+baby_names_flat_web <- read_csv("https://raw.githubusercontent.com/karina-kumar/NICAR26-R-Sessions/main/data-raw/R3_babynames_2000_2024_NICAR26.csv")
+
+# Show first 10 records
+baby_names_flat_web %>%
+  head(10)
+```
+
 #### Loading data from an Excel file
 
-#### Loading data from an HTML table
+Another data format you'll likely see in the wild: Excel files. They're a little trickier than csvs, because they can contain multiple sheets. 
 
-#### Loading data from google sheets
+We can use the `read_xlsx()` function from the `readxl` package to load data from Excel files. 
+
+There's an Excel file in the data folder called R3_baby_names_by_letter.xlsx. It is the same as the csv file, but the baby names are seperated into seperate sheets based on the first letter of the name. 
+
+Let's load the first sheet, the "A" babynames, as a dataframe and store it as an object called babynames_a_excel.
+
+Because the "A" names sheet is the first sheet in the Excel file, the function automatically loads the "A" sheet. 
+
+```{r}
+baby_names_a_excel <- read_xlsx("data/R3_baby_names_by_letter.xlsx")
+```
+
+But if we need to get any other sheet, like the one containing the "Q" names, we'll have to get it by adding another argument to the read_xlsx function. 
+
+The sheet is called "Q".
+
+How can we load Sheet Q?  Let's take a look at the handy help page for the readxl package.
+
+* You can either type ?read_xlsx in the console and look at what pops up on the right. 
+* Or you can visit https://readxl.tidyverse.org/reference/read_excel.html.  
+
+Can you see how to read in a different sheet from the first?  
+
+Let's modify the read_xlsx function below to load the sheet "Q".
+
+```{r}
+baby_names_q_excel <- read_xlsx("data-raw/R3_baby_names_by_letter.xlsx")
+```
+
+#### Loading data from an online HTML table
+
+#### Loading data from online Google Sheets
 
 #### Combining text files
 
