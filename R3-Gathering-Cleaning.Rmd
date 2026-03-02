@@ -75,8 +75,10 @@ Let's load the first sheet, the "A" babynames, as a dataframe and store it as an
 
 Because the "A" names sheet is the first sheet in the Excel file, the function automatically loads the "A" sheet. 
 
+If you want to write a csv as an Excel file with multiple sheets, you can also do this with the openxlsx package!
+
 ```{r}
-baby_names_a_excel <- read_xlsx("data/R3_baby_names_by_letter.xlsx")
+baby_names_a_excel <- read_xlsx("data-raw/R3_baby_names_by_letter.xlsx")
 ```
 
 But if we need to get any other sheet, like the one containing the "Q" names, we'll have to get it by adding another argument to the read_xlsx function. 
@@ -137,8 +139,33 @@ Never web scraped before? Now you have! :-)
 
 #### Loading data from online Google Sheets
 
-#### Combining text files
+We can also load data directly from Google Sheets, using the `read_sheet()` function from the `googlesheets4` package.  Google Sheets, like Excel files, can also have multiple workbooks. 
 
+I've loaded up a Google Sheet workbook here with two sheets, one for "A" babynames and one for "B" babynames: https://docs.google.com/spreadsheets/d/1GG_RmYPGCNKbLb4x1dkQv1B9NjDBF0kQRtge9Aea4rs. These samples only have 1,000 records in them.
+
+To read in the sheet, we need to paste in the sheet ID, which is the long sting of numbers and letters at the end of the URL: "1GG_RmYPGCNKbLb4x1dkQv1B9NjDBF0kQRtge9Aea4rs"
+
+Because the "A" sheet comes first, it automatically loads that sheet.
+
+Before we get there, though, we'll need to authenticate with Google.  Look down in the console, select an account or hit 1 to start the process of in-browser authentication. Make sure to allow the Tidyverse API to read, edit, and write to your Google Sheets!
+
+```{r}
+gs4_auth()
+
+```
+
+Now we can read in the sheet.
+
+```{r}
+
+babynames_a_sheet <- read_sheet("1YfWqUcGlWqBpA2egCP2DHjnBQIB6ed4qlTEoUm7a9mk")
+```
+
+If we want to load any other sheet, we need to tell it which one to load. 
+
+```{r}
+babynames_b_sheet <- read_sheet("1YfWqUcGlWqBpA2egCP2DHjnBQIB6ed4qlTEoUm7a9mk", sheet = "babynames_b")
+```
 #### Your Turn
 
 ## Data Cleaning
