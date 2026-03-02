@@ -98,6 +98,43 @@ baby_names_q_excel <- read_xlsx("data-raw/R3_baby_names_by_letter.xlsx")
 
 #### Loading data from an online HTML table
 
+On this page is an HTML table showing the top 2024 baby names. https://www.ssa.gov/oact/babynames/. Because the wifi is often buggy, I've saved an HTML file locally of this page, which we'll work with instead. It's in the data folder.
+
+We can use the inspector in our web browser to see this.  It's composed of html tags. 
+
+Using the `rvest` package we're going to first read in the entire html page using the `read_html()` function.
+
+```{r}
+# If we were going to pull directly from the web, instead of from a local file, this is what it will the function would look
+
+# top_2022_baby_names <- read_html("https://www.ssa.gov/oact/babynames/") 
+
+# Instead, we're gonna load a local html file to simulate the act of scraping from the web
+top_2024_baby_names <- read_html("data/html/ssa_baby_names.html")
+```
+
+Open it up in the environment window.  It's the full HTML of the page. 
+Next, we'll use `rvest` to extract the html table we want using `html_table()`
+
+```{r}
+top_2024_baby_names <- read_html("data-raw/ssa_baby_names.html") %>%
+  html_table()
+
+```
+
+Open it up in the environment window. We've isolated that one html table and turned it into a dataframe, albeit one that is nested in a list.  Let's extract it from the list. 
+
+```{r}
+# Pluck out the table
+top_2024_baby_names <- top_2024_baby_names[[1]]
+
+# display it
+top_2024_baby_names
+
+```
+
+Never web scraped before? Now you have! :-)
+
 #### Loading data from online Google Sheets
 
 #### Combining text files
