@@ -28,6 +28,9 @@ library(janitor)
 library(readxl)
 library(googlesheets4)
 library(lubridate)
+
+# Turn off scientific notation
+options(scipen=999)
 ```
 
 ## Ways to load data
@@ -75,7 +78,7 @@ Let's load the first sheet, the "A" babynames, as a dataframe and store it as an
 
 Because the "A" names sheet is the first sheet in the Excel file, the function automatically loads the "A" sheet. 
 
-If you want to write a csv as an Excel file with multiple sheets, you can also do this with the openxlsx package!
+If you want to write a dataframe as an Excel file with multiple sheets, you can also do this with the openxlsx package!
 
 ```{r}
 baby_names_a_excel <- read_xlsx("data-raw/R3_baby_names_by_letter.xlsx")
@@ -168,9 +171,99 @@ babynames_b_sheet <- read_sheet("1YfWqUcGlWqBpA2egCP2DHjnBQIB6ed4qlTEoUm7a9mk", 
 ```
 #### Your Turn
 
+This page https://www.ssa.gov/oact/babynames/state/top5_2021.html, which I've also stored locally, contains tables of the top 5 birth names for 2021 by state, one for male and one for female.  
+
+Using what you just learned, I'd like you to take a stab at ingesting the html of this page, and saving each of the tables as a separate data frame.   
+
+```{r}
+
+# local path to the data 
+# "data-raw/baby_names_2021_state.html"
+
+
+
+```
+
+
+### Your Turn Option 2
+
+538 puts a lot of neat data sets on its' GitHub organization page.  Here's the page to a dataset about the Avengers, from Marvel Comics:  
+
+https://github.com/fivethirtyeight/data/blob/master/avengers/avengers.csv
+
+Read this data into your environment and store it as an object called `avengers`. 
+
+```{r}
+
+```
+
+
+### Other ways of getting data
+
+There are lots of other ways to bring data into R.  We don't have to delve into all of them today, but you should be aware of them for continued learning. 
+
+* Pull data from an SQL database with the `dbplyr` package. [dbplyr](https://dbplyr.tidyverse.org/)
+
+* Get data from an API endpoint - You can access data available through pretty much any API, or application programming interface, by sending queries and getting back a response, using the excellent [HTTR package](https://httr.r-lib.org/).  An example of an API: [Spotify data](https://developer.spotify.com/documentation/web-api/) 
+
+* Get data from packages the R community has built to load and work with specific kinds of data, including some nice helper functions. If the dataset you want to use is popular, there's a great change someone has built an R package for it! Some great examples:
+  *[Tidycensus](https://walkerke.github.io/tidycensus/index.html): for loading and working with all manner of U.S. Census Data.
+  *[RTweet](https://rtweet.info/): for working with Twitter data
+
 ## Data Cleaning
 
+Data cleaning is a critical step in preparing data for analysis.  Everyone wants to jump right to the fun stuff -- me too! -- but failing to account for flaws in the data can lead to errors.  
+
+To start, we're going to load a dataframe with info on year-by-year totals for the most popular female baby names from 2008 to 2017. 
+
+I've intentionally made this very ugly, so we can practice how to clean up our data!
+
+```{r}
+babynames_dirty <- read_csv("data-raw/babynames_dirty.csv")
+```
 ### Identifying issues
+
+
+Examine the data in the environment window.  
+
+What problems do you see? Don't scroll down until you think you've found one or two of the problems. 
+
+
+
+
+
+
+
+
+
+
+Are you sure you can't find more?
+
+
+
+
+
+
+
+
+
+
+
+
+Are you sure? Ok. Here's what I see. 
+
+* EMPTY ROWS - There's a totally empty row of NAs. Let's get rid of it.  It could prevent proper summarizing. 
+* EMPTY COLUMN - There's a totally empty column called source. Let's get rid of it, because it's unneeded. 
+* INCONSISTENT VALUES - The "sex" column has inconsistent values for Female vs F. This could hurt our ability to group and summarize properly. 
+* STYLING INCONSISTENCIES - There are lots of issues in "name_at_birth" column. MADISON is upper. elizabeth is lower. Abigail has "First Name: Abigail" instead of just Abigail. Everything else is title case. This is just...ugly.
+* DUPLICATE ROWS - There are two apparently identical rows for Emma and Amelia (or are they?). We should really only have one, and could lead to misleading summarization if we kept both.
+* NUMBERS STORED AS CHARACTER STRINGS - The 2015 column has a random underscore appended to the end of the number, unlike every other year column. The fact that it's a mix of characters and numbers means the column is stored as a "character", while all of the other year columns are numbers (integers).  If we want to calculate say, the percent change in a name between 2008 and 2015, we'll get an error. 
+* BAD COLUMN NAMES - Less obvious, but still annoying: the fact that the year columns start with a number means they'll be harder to include in our code.
+
+Let's examine each of these, while fixing them. 
+
+Our goal will be one nice long chained function to fix all the problems, so we have a clear record of what we've done.
+
 
 ### Remove empty rows and columns
 
@@ -180,6 +273,8 @@ babynames_b_sheet <- read_sheet("1YfWqUcGlWqBpA2egCP2DHjnBQIB6ed4qlTEoUm7a9mk", 
 
 ### Standardizing
 
+Thanks for joining.  If you get stuck in the future and need some help, I'm at katherine.oung@gmail.com. 
 
+Updated for 2026 with credit to smussenden's NICAR 2024 R3 lesson.
 
 
