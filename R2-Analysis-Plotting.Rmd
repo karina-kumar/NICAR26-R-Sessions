@@ -3,9 +3,11 @@ title: "R2-Analysis-Plotting"
 output: html_document
 ---
 
-Description: We'll be learning how to clean, sort, filter, group, summarize
+Description: We will learn how to sort, filter, group, summarize and graph. 
 
 ## Setup 
+
+First we need to load in the libraries we will be using. Tidyverse is kind of like the pandas of R. Janitor is an extra helpful library for cleaning our data and some great shortcuts.
 
 ```{r}
 library(tidyverse)
@@ -14,55 +16,88 @@ library(janitor)
 
 ## Read in data
 
+First we will read in our data from a csv. This data is already pretty clean, so we don't need to use some of the extra arguments that read_csv has. 
+
 ```{r}
 raw <- read_csv("data-raw/babynames_2000_2024_NICAR26.csv")
 ```
+Hover to learn more about the function...
 
 ```{r}
-view(raw)
+raw # |> view()
 
-# What are some things we immediately notice about this dataset?
+#view(raw)
 ```
 
+What are some things we notice about this dataset? Anything we might need to clean up?
 
 ```{r}
 raw # No clicking around!
 ```
 
-## Cleaning
+## A quick cleaning
+
+A quick way to uniformly clean column names:
 
 ```{r}
 babynames <- raw |> clean_names()
 ```
 
-```{r}
-# Now, let's preview the data again
+Here are a few ways to explore our data:
 
+```{r}
+babynames |> glimpse()
+
+# gives us column types
+```
+
+```{r}
 babynames |> head(10)
+
+# first n number of rows, no automatic sorting
 ```
 
 ```{r}
-# How about the bottom? 
 babynames |> tail(7)
+
+# last n number of rows, no automatic sorting
 ```
+
+A tool good for numeric data: `summary()`
+
+```{r}
+summary(babynames)
+```
+
+QUESTIONS?
 
 ## Analysis 
 
+Now for the good stuff!
+
 ### Group By and Summarize
 
-What are some questions we can ask of this dataset? 
+Group by and summarize are kind of the meat and potatoes of data analysis, it's how you can create pivot tables like you would in excel to get counts for each group, sums, median, mean, max, min, etc. 
+
+First: `group_by()`. Group by a column.
 
 ```{r}
-babynames |> group_by(yr) 
+babynames |> group_by(yr) # name, sex
 ```
 
-Count
+Second step `summarize()`. In this case we want to count the total number of rows in each group OR the total number of baby names each year.
 
 ```{r}
 babynames |> group_by(yr) |> summarize(total_names = n()) # Name your new column
 ```
 
-What if we want to add another variable for a more complex ask?
+And there's another way to do this....
+
+```{r}
+babynames |> count(yr, name = "total_names")
+```
+
+What if we want to add another variable for a more complex ask? What is the total number of baby names for each sex each year?
 
 ```{r}
 babynames |> group_by(yr, sex) |> summarize(total_names = n())
@@ -70,29 +105,74 @@ babynames |> group_by(yr, sex) |> summarize(total_names = n())
 # How would you structure this table so that you could more easily see total number of names for F and M by year? 
 ```
 
+pivot our data wider (excel pivot tables!)
+
 ```{r}
-babynames |> group_by(yr, sex) |> 
-  summarize(total_names = n()) |> 
-  pivot_wider(names_from = sex, values_from = total_names)
+babynames |> group_by(yr, sex) |> summarize(total_names = n()) |> pivot_wider(names_from = sex, values_from = total_names)
+
+# names_from is the what you want the column names to come from
+# values_from is what do you want the values in each column to come from
 ```
 
-Is there an easier way to do this? Yep!
+or an easier way to do it...
 
 ```{r}
 babynames |> tabyl(yr, sex)
 ```
 
-What about total babies?
+another summarize option: sum. When we group by and sum we take each group and sum the values in the rows for that group. In our example this would give us the total number of babies each year for both sexes.
 
 ```{r}
-babynames |> group_by(yr) |> summarize(total_babies = sum(name_count))
+babynames |> group_by(yr) |> summarize(total_babies = sum(name_count)) # name your variable
 ```
 
-What year had the most babies? 
+Other options that don't make sense for this data: mean, median, max, min
+
+### Arrange
+
+Arrange is our way to sort our data.
 
 ```{r}
-babynames |> group_by(yr) |> summarize(total_babies = sum(name_count)) |>
-  arrange(yr) # desc
+babynames |> arrange(yr) # desc() 
+```
+
+## GSA - Group by, summarize, arrange
+
+Let's put it all together!
+
+show us in descending order which years had the most babies
+
+```{r}
+# YOUR CODE HERE
+```
+
+## Filter 
+
+Filter is exactly what it sounds like, a filter for your output. It's like a "WHERE" in SQL. 
+
+```{r}
+babynames |> filter(yr == 2024)
+
+# must return T or F
+
+```
+
+Some other filter options: 
+== EQUALS
+!= DOES NOT EQUAL
+> LESS THAN
+< GREATER THAN
+>= GREATER THAN OR EQUAL TO
+<= LESS THAN OR EQUAL TO
+%in% IN A LIST
+|> is.na() IS EQUAL TO NA
+
+Try it on your own! Filter the baby names data to only 2020 through 2024 (inclusive)
+
+HINT: AND is written with an "&". OR is written with a "|"
+
+```{r}
+# babynames |> filter(yr)
 ```
 
 You try: 
@@ -100,37 +180,75 @@ You try:
 What was the most popular name in 2024?
 
 ```{r}
-babynames |> 
-  filter(yr == 2024) |> 
-  group_by(yr, name) |> 
-  summarize(total_babies = sum(name_count)) |> 
-  arrange(desc(total_babies))
+
 ```
 
 How has the name Liam grown in popularity year over year, since 2000?
 
 ```{r}
+
+```
+
+ANSWERs:
+
+```{r}
 babynames |> 
+  filter(yr == 2024) |> 
+  group_by(yr, name) |> 
+  summarize(total_babies = sum(name_count)) |> 
+  arrange(desc(total_babies))
+
+df <- babynames |> 
   filter(name == "Liam") |> 
   group_by(yr) |> 
   summarize(total_liams = sum(name_count))
 ```
 
-How would you visualize this? 
+Let's visualize this data
+
+## Plotting/Graphing
+
+ggplot!
+
+first you initialize your empty plot
 
 ```{r}
-library(ggplot2)
+ggplot(df)
 ```
+
+next we can add our axes
 
 ```{r}
-babynames |> 
-  filter(name == "Liam") |> 
-  group_by(yr) |> 
-  summarize(total_liams = sum(name_count)) |> 
-  ggplot(aes(x = yr, y = total_liams)) +
-  geom_line()
+ggplot(df, aes(x = yr, y = total_liams))
 ```
 
+now let's add the visual. What makes the most sense? Columns? Dots? Lines? let's try all of them. Go back to our initial question: how has popularity for the name liam changed over time? what shows that best?
 
+```{r}
+liam_plot <- ggplot(df, aes(x = yr, y = total_liams)) + geom_line() # geom_point(), geom_bar(), geom_histogram(), geom_boxplot
+  
+liam_plot
+```
 
+## Making our chart pretty
 
+We can add labels
+
+```{r}
+liam_plot <- liam_plot + 
+  labs(
+    x = "Year",
+    y = "Number of babies named Liam",
+    title = "Popularity of the name Liam increased for babies born in the last 24 years",
+    subtitle = "The name Liam saw a large increase in popularity from 2008 to 2012 especially.")
+
+liam_plot
+```
+
+We can add a theme. 
+
+```{r}
+liam_plot + theme_dark()
+```
+
+There's lots more you can do with ggplot! The `scales` library is also helpful for changing the format of our axes. 
