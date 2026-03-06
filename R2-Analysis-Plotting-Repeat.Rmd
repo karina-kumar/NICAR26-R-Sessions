@@ -38,7 +38,13 @@ A quick way to uniformly clean column names:
 babynames <- raw |> clean_names()
 ```
 
-Here are a few ways to explore our data
+Let's look at it!
+
+```{r}
+babynames
+```
+
+Here are a few more ways to explore our data
 
 ```{r}
 babynames |> glimpse()
@@ -143,6 +149,12 @@ show us in descending order which years had the most babies
 ```
 
 
+ANSWER:
+```{r}
+babynames |> group_by(yr) |> summarize(total_babies = sum(name_count)) |> arrange(desc(total_babies))
+```
+
+
 ## Filter 
 
 Filter is exactly what it sounds like, a filter for your output. It's like a "WHERE" in SQL. 
@@ -157,12 +169,18 @@ babynames |> filter(yr == 2024)
 Some other filter options: 
 == EQUALS
 != DOES NOT EQUAL
-> LESS THAN
-< GREATER THAN
+< LESS THAN
+> GREATER THAN
 >= GREATER THAN OR EQUAL TO
 <= LESS THAN OR EQUAL TO
 %in% IN A LIST
 |> is.na() IS EQUAL TO NA
+
+Try filtering for your own name
+
+```{r}
+babynames |> filter(name == "Karina")
+```
 
 Try it on your own! Filter the baby names data to only 2020 through 2024 (inclusive)
 
@@ -172,12 +190,25 @@ HINT: AND is written with an "&". OR is written with a "|"
 # babynames |> filter(yr)
 ```
 
-You try: 
+ANSWER:
+```{r}
+babynames |> filter(yr >= 2020 & yr <= 2024)
+```
 
 What was the most popular name in 2024?
 
 ```{r}
 
+```
+
+ANSWER:
+
+```{r}
+ babynames |> 
+  filter(yr == 2024) |> 
+  group_by(yr, name) |> 
+  summarize(total_babies = sum(name_count)) |> 
+  arrange(desc(total_babies))
 ```
 
 How has the name Liam grown in popularity year over year, since 2000?
@@ -186,19 +217,15 @@ How has the name Liam grown in popularity year over year, since 2000?
 
 ```
 
-ANSWERs:
+ANSWER:
 
 ```{r}
- babynames |> 
-  filter(yr == 2024) |> 
-  group_by(yr, name) |> 
-  summarize(total_babies = sum(name_count)) |> 
-  arrange(desc(total_babies))
-
 df <- babynames |> 
   filter(name == "Liam") |> 
   group_by(yr) |> 
   summarize(total_liams = sum(name_count))
+
+df
 ```
 
 Let's visualize this data
